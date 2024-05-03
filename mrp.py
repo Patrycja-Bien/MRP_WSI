@@ -3,6 +3,16 @@ level_0_item = {"Name": ["GR", "POR", "A", "LT", "SS", "B"]}
 # Name: [0 - How much for 1 piece of level 0, 1 - Available, 2 - Lead time, 3 - Safety stock, 4 - Batches, {5 - Level 2 components}]
 level_1_components = {"Name": ["N", "A", "LT", "SS", "B", {"Name": ["N", "A", "LT", "SS", "B"]}]}
 
+# Example
+
+# Name: [0 - Gross requirements, 1 - Planned order receipts, 2 - Available, 3 - Lead Time, 4 - Safety stock, 5 - Batches]
+level_0_item = {"Stół": [[20,40],[6,8],2,1,20,10]}
+# Name: [0 - How much for 1 piece of level 0, 1 - Available, 2 - Lead time, 3 - Safety stock, 4 - Batches, {5 - Level 2 components}]
+level_1_components = {
+    "Nogi": [4,12,1,20,60, {"Śruby": [1,100,1,0,0]}],
+    "Blat": [1,10,1,10,0, {"Płyta pilśniowa": [1,4,1,10,20],
+                           "Lakier": [1,10,1,0,0]}]}
+
 interactive = input("Would you like to use iteractive input version? (Y/N): ")
 if interactive.upper() == "Y":
     level_0_item.clear()
@@ -110,7 +120,9 @@ def mrp(l_0_item, l_1_components):
             else:
                 net_with_batches_0 = net_0
             messages.append(f"Planned order receipts: week {info_0[1][i]}\nGross requirements: {info_0[0][i]}\nLead Time: {info_0[3]} week(s)\nAvailable in stock: {info_0[2]}\nSafety stock: {info_0[4]}\nBatches of production: {info_0[5]}\nNet requirements: {net_0}\nPlanned order release: {net_with_batches_0} on week {week_0}\n")
-            info_0[2] = (net_with_batches_0 + info_0[2]) - info_0[0][i]
+            info_0[2] = net_with_batches_0 - info_0[0][i]
+            if info_0[2] < 0:
+                info_0[2] = 0
     # Level 1
             for name_1,info_1 in l_1_components.items():
                 messages.append(f"Level 1 component: {name_1} x {info_1[0]}")
@@ -124,12 +136,14 @@ def mrp(l_0_item, l_1_components):
                     net_with_batches_1 = min_batch(net_1, info_1[4])
                 else:
                     net_with_batches_1 = net_1
-                messages.append(f"Planned order receipts: week {week_0}\nGross requirements: {net_0 * info_1[0]}\nLead Time: {info_1[2]} week(s)\nAvailable in stock: {info_1[1]}\nSafety stock: {info_1[3]}\nBatches of production: {info_1[4]}\nNet requirements: {net_1}\nPlanned order release: {net_with_batches_1} on week {week_1}\n")
-                info_1[1] = (net_with_batches_1 + info_1[1]) - (net_0 * info_1[0])
+                messages.append(f"Planned order receipts: week {week_0}\nGross requirements: {net_with_batches_0 * info_1[0]}\nLead Time: {info_1[2]} week(s)\nAvailable in stock: {info_1[1]}\nSafety stock: {info_1[3]}\nBatches of production: {info_1[4]}\nNet requirements: {net_1}\nPlanned order release: {net_with_batches_1} on week {week_1}\n")
+                info_1[1] = net_with_batches_1 - (net_with_batches_0 * info_1[0])
+                if info_1[1] < 0:
+                    info_1[1] = 0
     # Level 2
                 if len(info_1[5]) != 0:
                     for name_2, info_2 in l_1_components[name_1][5].items():
-                        messages.append(f"Level 2 component: {name_2} x {info_2[0]}")
+                        messages.append(f"Level 2 component for {name_1}: {name_2} x {info_2[0]}")
                         week_2 = week_1 - info_2[2]
                         if week_2 <= 0:
                             return(f"Order for item {name_2} can't be made on time with a planned order receipt on week {week_1} and a lead time of {info_2[2]}.")
@@ -140,8 +154,10 @@ def mrp(l_0_item, l_1_components):
                             net_with_batches_2 = min_batch(net_2, info_2[4])
                         else:
                             net_with_batches_2 = net_2
-                        messages.append(f"Planned order receipts: week {week_0}\nGross requirements: {net_1 * info_2[0]}\nLead Time: {info_2[2]} week(s)\nAvailable in stock: {info_2[1]}\nSafety stock: {info_2[3]}\nBatches of production: {info_2[4]}\nNet requirements: {net_2}\nPlanned order release: {net_with_batches_2} on week {week_2}\n")
-                        info_2[1] = (net_with_batches_2 + info_2[1]) - (net_1 * info_2[0])
+                        messages.append(f"Planned order receipts: week {week_0}\nGross requirements: {net_with_batches_1 * info_2[0]}\nLead Time: {info_2[2]} week(s)\nAvailable in stock: {info_2[1]}\nSafety stock: {info_2[3]}\nBatches of production: {info_2[4]}\nNet requirements: {net_2}\nPlanned order release: {net_with_batches_2} on week {week_2}\n")
+                        info_2[1] = net_with_batches_2 - (net_with_batches_1 * info_2[0])
+                        if info_2[1] < 0:
+                            info_2[1] = 0
     return "\n".join(map(str, messages))
 
 print(mrp(level_0_item, level_1_components))
