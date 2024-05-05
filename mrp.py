@@ -1,3 +1,4 @@
+import re
 # Name: [0 - Gross requirements, 1 - Planned order receipts, 2 - Available, 3 - Lead Time, 4 - Safety stock, 5 - Batches]
 level_0_item = {"Name": ["GR", "POR", "A", "LT", "SS", "B"]}
 # Name: [0 - How much for 1 piece of level 0, 1 - Available, 2 - Lead time, 3 - Safety stock, 4 - Batches, {5 - Level 2 components}]
@@ -97,6 +98,7 @@ elif interactive.upper() == "N":
 else:
     raise ValueError("Wrong input. Type only 'Y' or 'N'.")
 
+
 def min_batch(net_quantity,batch):
     batches_needed = net_quantity // batch
     if net_quantity % batch != 0:
@@ -160,7 +162,20 @@ def mrp(l_0_item, l_1_components):
                             info_2[1] = 0
     return "\n".join(map(str, messages))
 
-print(mrp(level_0_item, level_1_components))
+result = mrp(level_0_item, level_1_components)
+name = list(level_0_item.keys())[0].upper()
 
+file = open(f"MRP - {name}.txt", "w")
+for line in result:
+    file.write(line)
+file.close()
 
-
+# with open(f"MRP - {name}.txt") as f:
+#     data = f.read()
+#     n = re.findall("Level.+:\s(.+)", data)
+#     gr = re.findall("Gross requirements: "+r"(\d+)", data)
+#     a = re.findall("Available in stock: "+r"(\d+)", data)
+#     por = re.findall("Planned order receipts: week "+r"(\d+)", data)
+#     nr = re.findall("Net requirements: "+r"(\d+)", data)
+#     print(n)
+    
