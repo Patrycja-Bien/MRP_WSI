@@ -40,10 +40,15 @@ Generation of a detailed MRP report saved as a text file
 
 ## 📄 Output
 The program generates a text file report summarizing:
+
 ✔️ Planned Order Receipts
+
 ✔️ Gross Requirements
+
 ✔️ Available Inventory
+
 ✔️ Net Requirements
+
 ✔️ Order Release Dates
 
 This MRP system helps with production planning and inventory control, ensuring efficient material flow.
