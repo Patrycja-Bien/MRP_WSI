@@ -10,7 +10,7 @@ Generation of a detailed MRP report saved as a text file
 
 ## 📊 Program Structure
 
-###📌 MRP System Levels
+## 📌 MRP System Levels
 1️⃣ Level 0 (Finished Product)
 - Gross Requirements (GR)
 - Planned Order Receipts (POR)
@@ -31,14 +31,14 @@ Generation of a detailed MRP report saved as a text file
 - Components required to produce Level 1 items
 - Similar attributes as Level 1
 
-##🖥️ How It Works
+## 🖥️ How It Works
 - The user provides data for Level 0 (finished product).
 - The program calculates the net requirements based on available stock and gross demand.
 - If necessary, orders are scheduled considering lead time and batch size.
 - The program moves down the BOM hierarchy, determining required quantities for Level 1 and Level 2 components.
 - A detailed MRP report is generated, outlining planned orders and stock levels per week.
 
-##📄 Output
+## 📄 Output
 The program generates a text file report summarizing:
 ✔️ Planned Order Receipts
 ✔️ Gross Requirements
